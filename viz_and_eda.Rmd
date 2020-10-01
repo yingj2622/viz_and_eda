@@ -194,6 +194,27 @@ weather_df %>%
 ```
 
 
+## Save and Embed
+
+Let's save the scatter plot.
+
+```{r}
+weather_plot <- 
+  weather_df %>% 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5)
+
+ggsave("./results/weather_plot.pdf",weather_plot,width = 8, height = 5)
+```
+
+hat about embeding...
+
+```{r,fig.width = 6,fig.height = 3}
+weather_plot
+```
 
 
-
+Embed at different size.
+```{r,fig.width = 12,fig.height = 6}
+weather_plot
+```
