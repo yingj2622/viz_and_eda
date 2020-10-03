@@ -1,5 +1,6 @@
 ---
 title: "Visualization"
+subtitle: "Part I"
 author: "Ying Jin"
 date: "2020/10/1"
 output: github_document
@@ -215,6 +216,29 @@ weather_plot
 
 
 Embed at different size.
-```{r,fig.width = 12,fig.height = 6}
+```{r,fig.width = 12,fig.asp = .6, out.width = "90%"}
 weather_plot
 ```
+
+```{r}
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
+```
+
+```{r}
+weather_plot <- ggplot(weather_df,aes(x = prcp))
+
+weather_plot + geom_histogram(aes(fill = name))
+weather_plot + geom_density(aes(fill = name),alpha = .4)
+weather_plot + geom_boxplot(aes(x = name,y = prcp))
+weather_plot + geom_violin(aes(x = name,y = prcp,fill = name),alpha = .5)
+weather_plot + geom_density_ridges(aes(y=name),scale = .85)
+```
+
+```{r}
+weather_df %>% 
+  filter(prcp >0) %>% 
+  ggplot(aes(x = prcp,y = name)) +
+  geom_density_ridges(scale = .85)
+```
+
