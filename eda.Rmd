@@ -6,7 +6,7 @@ output: github_document
 ---
 
 
-```{r setup,eval = FALSE}
+```{r setup}
 library(tidyverse)
 
 knitr::opts_chunk$set(
@@ -53,5 +53,31 @@ weather_df =
 weather_df %>% 
   group_by(name,month) %>% 
   ungroup(name)
+```
+
+
+## Counting things
+
+count month / month observations
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarise(n_obs = n())
+```
+
+we can use "count"
+ 
+```{r}
+weather_df %>% 
+  count(name,month,name = "n_obs")
+```
+
+**NEVER** use base R's table
+
+```{r,eval = FALSE}
+weather_df %>% 
+  pull(month) %>% 
+  table()
 ```
 
