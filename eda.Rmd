@@ -214,3 +214,33 @@ weather_df %>%
 ## Quick note
 
 Summarize only gets you so far
+
+## Exercise
+
+```{r}
+pulse_df = haven::read_sas("./data/public_pulse_data.sas7bdat") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    cols = starts_with("bdi"),
+    names_to = "visit",
+    names_prefix = "bdi_score_",
+    values_to = "bdi_score"
+  ) %>% 
+  mutate(
+    visit = recode(visit,"bl" = "00m")
+  ) %>% 
+  select(id,visit,everything()) %>% 
+  mutate(
+    visit = factor(visit,levels = str_c(c("00","01","06","12"),"m"))
+  ) %>% 
+  arrange(id,visit) 
+
+pulse_df %>% 
+  group_by(visit) %>% 
+  summarise(
+    mean_bdi = mean(bdi_score,na.rm = TRUE),
+    median_bdi = median(bdi_score,na.rm = TRUE)
+  ) %>% 
+  knitr::kable(digits = 3)
+```
+

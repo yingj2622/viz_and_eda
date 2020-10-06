@@ -7,14 +7,14 @@ Ying Jin
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ------------------------------------------ tidyverse 1.3.0 --
+    ## -- Attaching packages -------------------------------------- tidyverse 1.3.0 --
 
     ## √ ggplot2 3.3.2     √ purrr   0.3.4
     ## √ tibble  3.0.3     √ dplyr   1.0.2
     ## √ tidyr   1.1.2     √ stringr 1.4.0
     ## √ readr   1.3.1     √ forcats 0.5.0
 
-    ## -- Conflicts --------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -412,3 +412,68 @@ weather_df %>%
 ## Quick note
 
 Summarize only gets you so far
+
+## Exercise
+
+``` r
+pulse_df = haven::read_sas("./data/public_pulse_data.sas7bdat") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    cols = starts_with("bdi"),
+    names_to = "visit",
+    names_prefix = "bdi_score_",
+    values_to = "bdi_score"
+  ) %>% 
+  mutate(
+    visit = recode(visit,"bl" = "00m")
+  ) %>% 
+  select(id,visit,everything()) %>% 
+  mutate(
+    visit = factor(visit,levels = str_c(c("00","01","06","12"),"m"))
+  ) %>% 
+  arrange(id,visit) 
+```
+
+    ## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
+    ## be translated to UTF-8
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00C4>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00D6>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00E4>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00F6>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00DF>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00C6>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00E6>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00D8>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00F8>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00C5>' to native encoding
+
+    ## Warning in FUN(X[[i]], ...): unable to translate '<U+00E5>' to native encoding
+
+``` r
+pulse_df %>% 
+  group_by(visit) %>% 
+  summarise(
+    mean_bdi = mean(bdi_score,na.rm = TRUE),
+    median_bdi = median(bdi_score,na.rm = TRUE)
+  ) %>% 
+  knitr::kable(digits = 3)
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+| visit | mean\_bdi | median\_bdi |
+| :---- | --------: | ----------: |
+| 00m   |     7.995 |           6 |
+| 01m   |     6.046 |           4 |
+| 06m   |     5.672 |           4 |
+| 12m   |     6.097 |           4 |
