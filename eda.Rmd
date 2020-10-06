@@ -244,3 +244,31 @@ pulse_df %>%
   knitr::kable(digits = 3)
 ```
 
+Another exercise
+
+```{r}
+pups_df = read_csv("./data/FAS_pups.csv") %>% 
+  janitor::clean_names()
+
+litters_df = read_csv("./data/FAS_litters.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(group, into = c("does","day"), sep = 3) %>% 
+  select(litter_number,everything())
+
+fas_df = left_join(pups_df,litters_df, by = "litter_number")
+
+fas_df %>% 
+  select(does,day,pd_pivot) %>% 
+  drop_na(does) %>% 
+  group_by(does,day) %>% 
+  summarise(
+    mean_pivot = mean(pd_pivot,na.rm = TRUE)
+  ) %>% 
+  pivot_wider(
+    names_from = day,
+    values_from = mean_pivot
+  ) %>% 
+  knitr::kable()
+
+```
+

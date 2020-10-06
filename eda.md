@@ -477,3 +477,64 @@ pulse_df %>%
 | 01m   |     6.046 |           4 |
 | 06m   |     5.672 |           4 |
 | 12m   |     6.097 |           4 |
+
+Another exercise
+
+``` r
+pups_df = read_csv("./data/FAS_pups.csv") %>% 
+  janitor::clean_names()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   `Litter Number` = col_character(),
+    ##   Sex = col_double(),
+    ##   `PD ears` = col_double(),
+    ##   `PD eyes` = col_double(),
+    ##   `PD pivot` = col_double(),
+    ##   `PD walk` = col_double()
+    ## )
+
+``` r
+litters_df = read_csv("./data/FAS_litters.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(group, into = c("does","day"), sep = 3) %>% 
+  select(litter_number,everything())
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   Group = col_character(),
+    ##   `Litter Number` = col_character(),
+    ##   `GD0 weight` = col_double(),
+    ##   `GD18 weight` = col_double(),
+    ##   `GD of Birth` = col_double(),
+    ##   `Pups born alive` = col_double(),
+    ##   `Pups dead @ birth` = col_double(),
+    ##   `Pups survive` = col_double()
+    ## )
+
+``` r
+fas_df = left_join(pups_df,litters_df, by = "litter_number")
+
+fas_df %>% 
+  select(does,day,pd_pivot) %>% 
+  drop_na(does) %>% 
+  group_by(does,day) %>% 
+  summarise(
+    mean_pivot = mean(pd_pivot,na.rm = TRUE)
+  ) %>% 
+  pivot_wider(
+    names_from = day,
+    values_from = mean_pivot
+  ) %>% 
+  knitr::kable()
+```
+
+    ## `summarise()` regrouping output by 'does' (override with `.groups` argument)
+
+| does |        7 |        8 |
+| :--- | -------: | -------: |
+| Con  | 7.000000 | 6.236364 |
+| Low  | 7.938776 | 7.720930 |
+| Mod  | 6.983607 | 7.041667 |
